@@ -8,6 +8,12 @@ Arquitetura separada:
 - `backend` (API Express)
 - `db` (PostgreSQL)
 
+Fluxo da aplicação:
+
+- o frontend chama a API pelo caminho `/api`
+- a API fala com o PostgreSQL via `postgres-service`
+- o health do backend responde em `/health` e também em `/api/health`
+
 ## Estrutura do Projeto
 
 ```
@@ -285,6 +291,12 @@ http://<ip-publico-do-no>:30090
 ```
 
 Health check da API:
+
+```bash
+curl http://<ip-publico-do-no>:30090/health
+```
+
+Se preferir testar pela rota compatível:
 
 ```bash
 curl http://<ip-publico-do-no>:30090/api/health
