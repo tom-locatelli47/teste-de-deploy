@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel de Usuarios</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+    <style>
+      :root {
+        --bg-top: #fff7e8;
+        --bg-bottom: #d9f4ff;
+        --surface: #ffffff;
+        --surface-strong: #fff3cf;
+        --text: #1d2a3a;
+        --muted: #4f6175;
+        --brand: #ff7a00;
+        --brand-2: #0077b6;
+        --danger: #d62828;
+        --ok: #2a9d8f;
+        --border: #d4dde7;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(
+            circle at top right,
+            #ffffff 0,
+            #ffffff 24%,
+            transparent 25%
+          ),
+          linear-gradient(145deg, var(--bg-top), var(--bg-bottom));
+        min-height: 100vh;
+      }
+
+      .page {
+        width: min(980px, 92vw);
+        margin: 40px auto;
+      }
+
+      .hero {
+        background: linear-gradient(
+          120deg,
+          var(--brand) 0%,
+          #ff9f1c 45%,
+          var(--brand-2) 100%
+        );
+        border-radius: 22px;
+        padding: 28px;
+        color: #fff;
+        box-shadow: 0 16px 42px rgba(12, 42, 78, 0.18);
+        transform: translateY(10px);
+        animation: rise 550ms ease-out forwards;
+      }
+
+      .hero h1 {
+        margin: 0;
+        font-size: clamp(1.6rem, 3vw, 2.3rem);
+        letter-spacing: 0.5px;
+      }
+
+      .hero p {
+        margin: 10px 0 0;
+        opacity: 0.92;
+      }
+
+      .grid {
+        display: grid;
+        gap: 16px;
+        margin-top: 18px;
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 18px;
+        box-shadow: 0 10px 30px rgba(25, 57, 91, 0.08);
+      }
+
+      .card h2 {
+        margin: 0 0 12px;
+        font-size: 1.1rem;
+      }
+
+      .input-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 10px;
+      }
+
+      input {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 11px;
+        font-size: 0.95rem;
+      }
+
+      button {
+        border: none;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+          transform 0.16s ease,
+          filter 0.16s ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        filter: brightness(1.03);
+      }
+
+      .btn-primary {
+        background: linear-gradient(120deg, var(--brand), #ff9f1c);
+        color: #fff;
+      }
+
+      .btn-danger {
+        background: #ffe8e8;
+        color: var(--danger);
+      }
+
+      .toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .pill {
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: var(--surface-strong);
+        color: #8c5200;
+        font-size: 0.85rem;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 14px 0 0;
+      }
+
+      li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 10px;
+        background: #fff;
+      }
+
+      .user-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .user-info strong {
+        font-size: 0.98rem;
+      }
+
+      .muted {
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+      .msg {
+        margin-top: 10px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        font-size: 0.92rem;
+      }
+
+      .ok {
+        background: #e5fbf6;
+        color: #0f6f63;
+      }
+
+      .err {
+        background: #ffeded;
+        color: #8d1e1e;
+      }
+
+      .empty {
+        margin-top: 12px;
+        color: var(--muted);
+      }
+
+      .fade-enter-active,
+      .fade-leave-active {
+        transition: opacity 200ms ease;
+      }
+
+      .fade-enter-from,
+      .fade-leave-to {
+        opacity: 0;
+      }
+
+      @keyframes rise {
+        to {
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 760px) {
+        .page {
+          margin: 20px auto 24px;
+        }
+
+        .input-row {
+          grid-template-columns: 1fr;
+        }
+
+        li {
+          flex-direction: column;
+          align-items: stretch;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main id="app" class="page">
+      <section class="hero">
+        <h1>Painel de Usuarios</h1>
+        <p>Frontend em Vue conectado a sua API Express + PostgreSQL.</p>
+      </section>
+
+      <section class="grid">
+        <article class="card">
+          <h2>Cadastrar usuario</h2>
+          <form class="input-row" @submit.prevent="criarUsuario">
+            <input
+              v-model.trim="form.nome"
+              type="text"
+              placeholder="Nome"
+              required />
+            <input
+              v-model.trim="form.email"
+              type="email"
+              placeholder="Email"
+              required />
+            <button class="btn-primary" type="submit" :disabled="loadingCriar">
+              {{ loadingCriar ? 'Salvando...' : 'Salvar' }}
+            </button>
+          </form>
+          <transition name="fade">
+            <p v-if="mensagem" class="msg" :class="mensagemTipo">
+              {{ mensagem }}
+            </p>
+          </transition>
+        </article>
+
+        <article class="card">
+          <div class="toolbar">
+            <h2>Usuarios cadastrados</h2>
+            <div>
+              <span class="pill">Total: {{ usuarios.length }}</span>
+              <button
+                class="btn-primary"
+                @click="carregarUsuarios"
+                :disabled="loadingLista"
+                style="margin-left: 8px">
+                {{ loadingLista ? 'Atualizando...' : 'Atualizar' }}
+              </button>
+            </div>
+          </div>
+
+          <p v-if="loadingLista" class="muted">Carregando usuarios...</p>
+          <p v-else-if="usuarios.length === 0" class="empty">
+            Nenhum usuario encontrado.
+          </p>
+
+          <ul v-else>
+            <li v-for="u in usuarios" :key="u.id">
+              <div class="user-info">
+                <strong>{{ u.nome }}</strong>
+                <span class="muted">{{ u.email }}</span>
+              </div>
+              <button class="btn-danger" @click="deletarUsuario(u.id)">
+                Remover
+              </button>
+            </li>
+          </ul>
+        </article>
+      </section>
+    </main>
+
+    <script>
+      const { createApp } = Vue;
+
+      createApp({
+        data() {
+          return {
+            usuarios: [],
+            form: {
+              nome: "",
+              email: "",
+            },
+            loadingLista: false,
+            loadingCriar: false,
+            mensagem: "",
+            mensagemTipo: "ok",
+          };
+        },
+        methods: {
+          mostrarMensagem(texto, tipo = "ok") {
+            this.mensagem = texto;
+            this.mensagemTipo = tipo;
+            setTimeout(() => {
+              this.mensagem = "";
+            }, 2400);
+          },
+          async carregarUsuarios() {
+            this.loadingLista = true;
+            try {
+              const resposta = await fetch("/api/usuarios");
+              if (!resposta.ok) {
+                throw new Error("Falha ao carregar usuarios");
+              }
+              this.usuarios = await resposta.json();
+            } catch (erro) {
+              this.mostrarMensagem(
+                "Nao foi possivel carregar os usuarios.",
+                "err",
+              );
+            } finally {
+              this.loadingLista = false;
+            }
+          },
+          async criarUsuario() {
+            this.loadingCriar = true;
+            try {
+              const resposta = await fetch("/api/usuarios", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(this.form),
+              });
+
+              if (!resposta.ok) {
+                throw new Error("Falha ao criar usuario");
+              }
+
+              this.form.nome = "";
+              this.form.email = "";
+              this.mostrarMensagem("Usuario cadastrado com sucesso.");
+              await this.carregarUsuarios();
+            } catch (erro) {
+              this.mostrarMensagem("Erro ao cadastrar usuario.", "err");
+            } finally {
+              this.loadingCriar = false;
+            }
+          },
+          async deletarUsuario(id) {
+            try {
+              const resposta = await fetch(`/api/usuarios/${id}`, {
+                method: "DELETE",
+              });
+
+              if (!resposta.ok) {
+                throw new Error("Falha ao remover usuario");
+              }
+
+              this.mostrarMensagem("Usuario removido com sucesso.");
+              await this.carregarUsuarios();
+            } catch (erro) {
+              this.mostrarMensagem("Erro ao remover usuario.", "err");
+            }
+          },
+        },
+        mounted() {
+          this.carregarUsuarios();
+        },
+      }).mount("#app");
+    </script>
+  </body>
+</html>
